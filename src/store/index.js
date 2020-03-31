@@ -8,14 +8,33 @@ export default new Vuex.Store({
   state: {
     // list of products we sell depicted as [{product-object}]
     products: [], 
-    // carted items as a list of products depicted as [{id, quantity}]
+    // carted items as a list of products depicted as [{id, price, quantity}]
     cart: [],     
   },
   getters: {
-    productsCount: (state) => state.products.length,
-    availableProducts: (state, getters) => {
-      return state.products.filter((prod, index) => prod.inventory > 0)
-    }
+    productCatalog: (state, getters) => state.products,
+    shoppingCart: (state, getters) => {
+      // return a product by joining in the title from our Product Catalog
+      return state.cart.map((cartItem) => {
+        const { id, quantity } = cartItem
+        const { title, price } = getters.productCatalog.find((prod) => prod.id === cartItem.id)
+        return {
+          id,
+          title,
+          price,
+          quantity,
+        }
+      })
+    },
+    shoppingCartTotal: (state, getters) => {
+      const initialSum = 0
+      return getters.shoppingCart.reduce((accumulator, product) => accumulator + product.quantity * product.price, initialSum)
+    },
+    // Unused, shown as an example/reference
+    // productsCount: (state) => state.products.length,
+    // availableProducts: (state, getters) => {
+    //   return state.products.filter((prod, index) => prod.inventory > 0)
+    // },
   },
   mutations: {
     setProducts(state, payload) {
@@ -24,16 +43,16 @@ export default new Vuex.Store({
     },
     updateProductsInCart(state, payload) {
       // Ensure we got a well defined product
-      if (!payload || !payload.id || !payload.quantity) {
+      if (!payload || !payload.id || !payload.quantity || !payload.price) {
         return
       }
 
       // check if product already before adding or incrementing
-      const { id, quantity } = payload
+      const { id, quantity, price } = payload
       const productInCart = state.cart.find((product) => product.id === payload.id)
       if (!productInCart) {
         // add the product with its defined quantity
-        state.cart.push({ id, quantity })
+        state.cart.push({ id, quantity, price })
       } else {
         // simply increment exising product in cart with additive quantity
         productInCart.quantity += quantity
