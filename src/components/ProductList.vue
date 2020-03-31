@@ -9,14 +9,15 @@
         <ul>
           <li v-for="product in products" :key='product.id'>
             Product: {{ product.title }} - {{ product.price }} - Quantity In-Stock: {{ product.inventory }}
-            </br>
+            <button :disabled="!product.inventory"
+              @click="addToCart(product)">Add to Cart</button>
           </li>
         </ul>
         <h2>Available In-Stock Products</h2>
         <ul>
-          <li v-for="product in availableProducts" :key='product.id'>
+          <li v-for="product in products" :key='product.id'>
             Product: {{ product.title }} - {{ product.price }}
-            </br>
+            <br/>
           </li>
         </ul>
     </div>
@@ -46,6 +47,12 @@ export default {
     this.$store.dispatch('fetchProducts')
       .then(() => this.isLoading = false)
     console.log('ProductList.vue::created exiting')
+  },
+  methods: {
+    addToCart(product) {
+      console.log('ProductList.vue::addToCart() starting')
+      this.$store.dispatch('addProductToCart', { id: product.id, quantity: 1 })
+    }
   }
 }
 </script>
