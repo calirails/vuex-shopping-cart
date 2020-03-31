@@ -8,6 +8,10 @@
       </li>
     </ul>
     <h4>Total: {{ preTaxTotal | asCurrency }}</h4>
+    <button @click="$store.dispatch('checkout')"
+      :disabled="shoppingCart.length === 0"
+      >Check out</button>
+    <h4>{{ this.$store.state.checkoutStatusMessage }}</h4>
   </div>
 </template>
 

@@ -9,7 +9,9 @@ export default new Vuex.Store({
     // list of products we sell depicted as [{product-object}]
     products: [], 
     // carted items as a list of products depicted as [{id, price, quantity}]
-    cart: [],     
+    cart: [],    
+    // checkout status message
+    checkoutStatusMessage: "Checkout after you add items to your cart."
   },
   getters: {
     productCatalog: (state, getters) => state.products,
@@ -77,6 +79,12 @@ export default new Vuex.Store({
         // decrement in-stock quantity
         productInStock.inventory -= quantity
       }
+    },
+    setCheckoutStatus(state, payload) {
+      state.checkoutStatusMessage = payload
+    },
+    clearCart(state, payload) {
+      state.cart = []
     }
   },
   actions: {
@@ -98,6 +106,20 @@ export default new Vuex.Store({
         // Update Inventory
         context.commit('updateInvetory', product)
       }
-    }    
+    },
+    checkout(context) {
+      console.log('store::checkout::action starting')
+      productApi.buyProducts(
+        context.state.cart,
+        () => { 
+          context.commit('setCheckoutStatus', 'Order created successfully.')
+          context.commit('clearCart')
+        },
+        () => {
+          context.commit('setCheckoutStatus', 'Checkout Failed. Please try again?')
+        }
+      )
+      console.log('store::checkout::action exiting')
+    }
   }
 })
