@@ -32,6 +32,11 @@ export default new Vuex.Store({
       const initialSum = 0
       return getters.shoppingCart.reduce((accumulator, product) => accumulator + product.quantity * product.price, initialSum)
     },
+    isProductInStock: (state, getters) => { 
+      return function(product) {
+        return state.products.find((p) => p.id === product.id).inventory > 0
+      } 
+    },
     // Unused, shown as an example/reference
     // productsCount: (state) => state.products.length,
     // availableProducts: (state, getters) => {
