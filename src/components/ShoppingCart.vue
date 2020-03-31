@@ -1,20 +1,13 @@
 <template>
   <div>
-    <h1>Shop "Like it's your Birthday" at Shoe Palace!!</h1>
-    <img v-if="isLoading"
-      src="https://i.imgur.com/7fIx9TK.gif"
-    />
-    <div v-else>      
-        <h2>Available In-Stock Products</h2>
-        <ul>
-          <li v-for="product in productCatalog" :key='product.id'>
-            Product: {{ product.title }} - {{ product.price | asCurrency }} - Quantity In-Stock: {{ product.inventory }}
-            <button :disabled="!product.inventory"
-              @click="addToCart(product)">Add to Cart</button>
-          </li>
-        </ul>
-        <hr>
-    </div>
+    <h2>Shopping Cart</h2>
+    <ul>
+      <li v-for="cartedItem in shoppingCart" :key='cartedItem.id'>
+        Product: {{ cartedItem.title }} - {{ cartedItem.price | asCurrency }} - {{ cartedItem.quantity }}
+        <br/>
+      </li>
+    </ul>
+    <h4>Total: {{ preTaxTotal | asCurrency }}</h4>
   </div>
 </template>
 
