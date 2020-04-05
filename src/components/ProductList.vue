@@ -7,7 +7,9 @@
     <div v-else>      
         <h2>Available In-Stock Products</h2>
         <ul>
-          <li v-for="product in productCatalog" :key='product.id'>
+          <li v-for="product in productCatalog" 
+              :key='product.id'
+              v-bind:class="{low: lowStockAlert(product)}">
             Product: {{ product.title }} - {{ product.price | asCurrency }} - Quantity In-Stock: {{ product.inventory }}
             <button :disabled="!(isProductInStock(product))"
               @click="addToCart(product)">Add to Cart</button>
@@ -34,8 +36,9 @@ export default {
     }),
     ...mapGetters({
       shoppingCart: 'shoppingCart',
-      isProductInStock: 'isProductInStock'
-    }),
+      isProductInStock: 'isProductInStock',
+      lowStockItems: 'lowStockItems'
+    })
   },
   created() {
     console.log('ProductList.vue::created starting')
@@ -52,8 +55,17 @@ export default {
     addToCart(product) {
       console.log('ProductList.vue::addToCart() starting')
       this.addProductToCart({ id: product.id, quantity: 1, price: product.price })
+    },
+    lowStockAlert(product) {
+      return this.lowStockItems(3).find((p) => p.id === product.id)
     }
   }
 }
 </script>
+
+<style scoped>
+  .low {
+    color: red;
+  }
+</style>
   

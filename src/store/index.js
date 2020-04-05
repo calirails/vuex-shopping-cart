@@ -6,7 +6,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    // list of products we sell depicted as [{product-object}]
+    // list of products we sell depicted as [{id, title, price, inventory}]
     products: [], 
     // carted items as a list of products depicted as [{id, price, quantity}]
     cart: [],    
@@ -32,16 +32,13 @@ export default new Vuex.Store({
       const initialSum = 0
       return getters.shoppingCart.reduce((accumulator, product) => accumulator + product.quantity * product.price, initialSum)
     },
-    isProductInStock: (state, getters) => { 
-      return function(product) {
-        return state.products.find((p) => p.id === product.id).inventory > 0
-      } 
-    },
+    isProductInStock: (state, getters) => (product) => state.products.find((p) => p.id === product.id).inventory > 0,
     // Unused, shown as an example/reference
     // productsCount: (state) => state.products.length,
     // availableProducts: (state, getters) => {
     //   return state.products.filter((prod, index) => prod.inventory > 0)
     // },
+    lowStockItems: (state, getters) => (inStockQuantity) => state.products.filter((p) => p.inventory < inStockQuantity)
   },
   mutations: {
     setProducts(state, payload) {
