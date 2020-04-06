@@ -31,13 +31,20 @@ export default {
     }
   },
   computed: {
+    // Note: This (state) parameter is implicitly rootState so we need to provide the full path
+    //       Truth be told, we should avoid mapState and use mapGetters with its namespace to avoid ambiguity.
     ...mapState({
-      productCatalog: 'products'
+      productCatalog: (state) => {
+        console.log({state})
+        return state.product.offers
+      }
     }),
-    ...mapGetters({
-      shoppingCart: 'shoppingCart',
+    ...mapGetters("product", {
       isProductInStock: 'isProductInStock',
       lowStockItems: 'lowStockItems'
+    }),
+    ...mapGetters("cart", {
+      shoppingCart: 'shoppingCart',
     })
   },
   created() {
@@ -48,10 +55,19 @@ export default {
     console.log('ProductList.vue::created exiting')
   },
   methods: {
-    ...mapActions({
-      fetchProducts: 'fetchProducts',
-      addProductToCart: 'addProductToCart'
+    // Note: these actions are broken out by namespaces but option 
+    ...mapActions("product", {
+        fetchProducts: 'fetchProducts',
     }),
+    ...mapActions("cart", {
+        addProductToCart: 'addProductToCart'
+    }),
+    // NOTE: alternative to the two broken out mapActions is to
+    //       remove namespace parameter and append to action name as follows:
+    // ...mapActions({
+    //     fetchProducts: 'product/fetchProducts',
+    //     addProductToCart: 'cart/addProductToCart'
+    // }),
     addToCart(product) {
       console.log('ProductList.vue::addToCart() starting')
       this.addProductToCart({ id: product.id, quantity: 1, price: product.price })
